@@ -1,7 +1,7 @@
 {
-  "name": "limestone",
-  "description": "Sphinx search server connector for Node.js",
-  "version": "0.1.5",
+  "name": "persistent-limestone",
+  "description": "Sphinx search server connector for Node.js based in limestone with persistent connection",
+  "version": "0.1",
   "keywords": [
     "sphinx",
     "search",
@@ -11,15 +11,15 @@
   ],
   "main": "./limestone.js",
   "maintainers": [
-    "Serge Shirokov <bolter.fire@gmail.com> (http://kuroikaze85.wordpress.com)"
+    "Álvaro Escarcha"
   ],
   "bugs": {
-    "name": "http://github.com/kurokikaze/limestone/issues"
+    "name": "https://github.com/aescarcha/persistent-limestone/issues"
   },
   "license": "MIT",  
   "repository": {
     "type": "git",
-    "url": "git://github.com/kurokikaze/limestone"
+    "url": "git://github.com/aescarcha/persistent-limestone"
   },
   "engine": "node",
   "implements": [
@@ -32,12 +32,8 @@
   "engines": {
     "node": "*"
   },
-  "author": "Sergey Shirokov <bolter.fire@gmail.com> (http://kuroikaze85.wordpress.com)",
-  "homepage": "http://kurokikaze.github.com/limestone",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/kurokikaze/limestone.git"
-  },
+  "author": "Álvaro Escarcha",
+  "homepage": "https://github.com/aescarcha/persistent-limestone",
   "scripts": {
     "test": "node tests/purels.js"
   }
