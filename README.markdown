@@ -6,13 +6,7 @@ Here is an example of opening a persistent connection and running multiple queri
 
     var limestone = require("./limestone").SphinxClient();
 
-    limestone.persConnect(9312, // port. 9312 is standard Sphinx port. also 'host:port' allowed
-        true,
-        function(err) { // callback
-            if (err) {
-                console.log('Connection error: ' + err.message);
-                process.exit();
-            }
+    llimestone.persConnect(9312).then( function(limestone) {
             console.log('Connected, sending queries');
 
             setInterval(() => {
@@ -35,6 +29,9 @@ Here is an example of opening a persistent connection and running multiple queri
 
                     });
             }, 1000);
+        }).reject((e) => {
+            console.log('Connection error: ' + err.message);
+            process.exit();
         });
 
 

@@ -109,50 +109,38 @@ exports.SphinxClient = function() {
     self.persConnect = function() {
         return new Promise((resolve, reject) => {
 
-            var args = Array.prototype.slice.call(arguments);
+            const args = Array.prototype.slice.call(arguments);
 
-            let callback = args.pop();
-            var hostport = args.length ? args.shift() + '' : ':'+Sphinx.port;
-            var persistent =  _persistent = args.length ? args.shift() : false;
+            let hostport = args.length ? args.shift() + '' : ':'+Sphinx.port;
 
             if(hostport.indexOf(':')==-1){
                 hostport = isNaN(hostport) ? hostport + ':' + Sphinx.port : ':' + hostport;
             }
             hostport = hostport.split(':');
 
-            var host = hostport[0].trim().length ? hostport[0].trim(): 'localhost' ;
-            var port = hostport[1].trim().length ? hostport[1].trim() : Sphinx.port;
+            const host = hostport[0].trim().length ? hostport[0].trim(): 'localhost' ;
+            const port = hostport[1].trim().length ? hostport[1].trim() : Sphinx.port;
             server_conn = tcp.createConnection(port, host);
             server_conn.on('error', function(x){
                 console.log('Error: '+x);
                 server_conn.end();
-                callback(x);
-            });
-
-            server_conn.once('connected', function(x){
-                console.log('Error: '+x);
-                callback(x);
+                reject(x);
             });
 
             server_conn.on('data', function (chunk) {
-                // server_conn.on('data', readResponseData);
                 if (!_connected) {
                     _connected = true;
                     server_conn.emit('sphinx.connected');
-                    callback(null);
+                    // callback(null);
+                    resolve(self);
                 } else {
                     readResponseData(chunk);
                 }
             });
 
-
-            server_conn.on('drain', function (chunk) {
-            });
-
             response_output = null;
 
             server_conn.addListener('connect', function () {
-
                 var version_number = Buffer.makeWriter();
                 version_number.push.int32(1);
                 server_conn.write(version_number.toBuffer());
@@ -163,40 +151,8 @@ exports.SphinxClient = function() {
                 pers_req.push.int32(4);
                 pers_req.push.int32(1);
                 server_conn.write(pers_req.toBuffer());
-
-                // Waiting for answer
-                server_conn.once('readable', function() {
-                    var data = server_conn.read();
-
-                    var protocol_version_raw = data.toReader();
-                    var protocol_version = protocol_version_raw.int32();
-                    // if there still data? process and callback
-                    if(!protocol_version_raw.empty()) {
-                        let status_code = protocol_version_raw.int16();
-                        let version = protocol_version_raw.int16();
-                        let server_message = protocol_version_raw.lstring();
-                        let errmsg = '';
-                        if(status_code == Sphinx.statusCode.ERROR){
-                            errmsg = 'Server issued ERROR: '+server_message;
-                        }
-                        if(status_code == Sphinx.statusCode.RETRY){
-                            errmsg = 'Server issued RETRY: '+server_message;
-                        }
-                        console.log('Protocol version is here', errmsg);
-                        if(errmsg){
-                            callback(new Error(errmsg));
-                        }
-                    }
-                    var data_unpacked = {'': protocol_version};
-                    console.log('data_unpacked', data_unpacked);
-                });
-
             });
-
-
-
         });
-
     };
     // Connect to Sphinx server
     self.connect = function() {
