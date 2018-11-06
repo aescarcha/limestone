@@ -369,7 +369,8 @@ exports.SphinxClient = function() {
 
         request.push.int32(query.filters.length);
         for (var filter_id in query.filters) {
-            var filter = query.filters[filter_id];
+            // Avoid modifying incoming filter
+            var filter = {...query.filters[filter_id]};
             if (!filter.attr) {
                 filter.attr = "";
             }
