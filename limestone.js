@@ -108,6 +108,9 @@ exports.SphinxClient = function() {
 
     self.persConnect = function() {
         return new Promise((resolve, reject) => {
+            if (_connected) {
+                return resolve(self);
+            }
 
             const args = Array.prototype.slice.call(arguments);
 
@@ -124,6 +127,7 @@ exports.SphinxClient = function() {
             server_conn.on('error', function(x){
                 console.log('Error: '+x);
                 server_conn.end();
+                _connected = false;
                 reject(x);
             });
 
@@ -138,6 +142,12 @@ exports.SphinxClient = function() {
                 }
             });
 
+            server_conn.on("close", function(x) {
+                server_conn.end();
+                _connected = false;
+            });
+
+            server_conn.setNoDelay(true);
             response_output = null;
 
             server_conn.addListener('connect', function () {
@@ -543,6 +553,10 @@ exports.SphinxClient = function() {
 
     self.getQueue = function() {
       return _queue;
+    };
+
+    self.getConnected = function() {
+        return _connected;
     };
 
     function _enqueue(req_buf , cb, sc) {
