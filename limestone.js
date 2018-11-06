@@ -112,6 +112,8 @@ exports.SphinxClient = function() {
                 return resolve(self);
             }
 
+            _persistent = true;
+
             const args = Array.prototype.slice.call(arguments);
 
             let hostport = args.length ? args.shift() + '' : ':'+Sphinx.port;
@@ -146,6 +148,12 @@ exports.SphinxClient = function() {
                 server_conn.end();
                 _connected = false;
             });
+
+            server_conn.on("end", function(x) {
+                server_conn.end();
+                _connected = false;
+            });
+
 
             server_conn.setNoDelay(true);
             response_output = null;
