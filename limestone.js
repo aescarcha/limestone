@@ -147,6 +147,7 @@ exports.SphinxClient = function() {
             server_conn.on("close", function(x) {
                 server_conn.end();
                 _connected = false;
+                self.errorAllCallbacks();
             });
 
             server_conn.on("end", function(x) {
@@ -172,6 +173,15 @@ exports.SphinxClient = function() {
             });
         });
     };
+
+    // Send error to all queued callbacks, called when connection is closed unexpectedly
+    self.errorAllCallbacks = function() {
+        _queue.forEach((request) => {
+            request.callback('Connection closed unexpectedly');
+        });
+    };
+
+
     // Connect to Sphinx server
     self.connect = function() {
 
